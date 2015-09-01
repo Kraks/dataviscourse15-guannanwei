@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework 1 - Guannan Wei</title>
+    <script src="js/jquery-2.1.4.js"></script>
+    <script src="js/underscore.js"></script>
+    <script type="text/javascript">
+    /* Data and auxiliary functions */
+    var canvasHeight = 300;
+    var canvasWidth = 400;
+    var barWidth = 20;
+    var factor = barWidth;
+
+    var X = [10.0, 8.0, 13.0, 9.0, 11.0, 14.0, 6.0, 4.0, 12.0, 7.0, 5.0];
+    var Y = [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74];
+
+    var refreshSVG = function(sel) {
+        $(sel).html($(sel).html());
+    };
+
+    var createCanvas = function(className, id, width, height) {
+        var aux = function() {
+            return _.template("<svg class=\"<%= className %>\" \
+                                    id=\"<%= id %>\" width=\"<%= width %>\" \
+                                    height=\"<%= height %>\" version=\"1.1\" \
+                                    xmlns=\"http://www.w3.org/2000/svg\"></svg>");
+        };
+        return aux()({className: className, id: id, width: width, height: height});
+    };
+
+    var randomID = function() {
+        return Number.parseInt(Math.random() * (1000 - 10000) + 10000).toString();
+    };
+
+    var insertBreakLine = function() {
+        $("body").append("<br />");
+    };
+
+    var drawCanvas = function(className, idPrefix, width, height) {
+        var id = idPrefix + randomID();
+        $("body").append(createCanvas(className, id, width, height));
+        return "#" + id;
+    };
+
+    /* Bar Chart */
+
+    var drawBar = function(svgId, x, y, width, height) {
+        var aux = function() {
+            return _.template("<rect x=\"<%= x %>\" \
+                                     y=\"<%= y %>\" \
+                                     width=\"<%= width %>\" \
+                                     height=\"<%= height %>\"/>");
+        };
+        $(svgId).append(aux()({x: x, y: y, width: width, height: height}));
+    };
+
+    var drawBarChartCanvas = function(width, height) {
+        return drawCanvas("barChart", "barChart", width, height);
+    };
+
+    var drawBarChart = function(data) {
+        var cid = drawBarChartCanvas(canvasWidth, canvasHeight);
+        _.each(data, function(element, index) {
+            var x = index
+            var y = element
+            drawBar(cid, x*factor, (canvasHeight - y*factor), barWidth, y*factor);
+        });
+        refreshSVG(cid);
+    };
+
+    /* Line Charts */
+
+    var drawLine = function(svgId, x1, y1, x2, y2) {
+        var aux = function() {
+            return _.template("<line x1=\"<%= x1 %>\" x2=\"<%= x2 %>\" \
+                                     y1=\"<%= y1 %>\" y2=\"<%= y2 %>\"/>");
+        };
+        $(svgId).append(aux()({x1: x1, x2: x2,
+                               y1: y1, y2: y2}));
+    };
+
+    var drawLineCanvas = function(width, height) {
+        return drawCanvas("lineChart", "lineChart", width, height);
+    };
+
+    var drawLineChart = function(data) {
+        var data1 = data.slice(0, data.length-1);
+        var data2 = data.slice(1);
+        data = _.zip(data1, data2);
+
+        var cid = drawLineCanvas(canvasWidth, canvasHeight);
+        _.each(data, function(element, index) {
+            var x1 = index * factor;
+            var x2 = (index+1) * factor;
+            var y1 = canvasHeight - (element[0] * factor);
+            var y2 = canvasHeight - (element[1] * factor);
+            drawLine(cid, x1, y1, x2, y2);
+        });
+        refreshSVG(cid);
+    };
+
+    /* Scatter plot */
+
+    var drawPlot = function(svgId, cx, cy) {
+        var aux = function() {
+            return _.template("<circle cx=\"<%= cx %>\" cy=\"<%= cy %>\"/>");
+        };
+        $(svgId).append(aux()({cx: cx, cy: cy}));
+    };
+
+    var drawPlotCanvas = function(width, height) {
+        return drawCanvas("scatterplot", "scatterplot", width, height);
+    };
+
+    var drawScatterplot = function(X, Y) {
+        var data = _.zip(X, Y);
+        var cid = drawPlotCanvas(canvasWidth, canvasHeight);
+        _.each(data, function(element, index) {
+            drawPlot(cid, element[0]*factor, canvasHeight - element[1]*factor);
+        });
+        refreshSVG(cid);
+    };
+
+    /////////////////////////////////////
+
+    $("body").ready(function() {
+        /* Drawing Bar Charts */
+        drawBarChart(X);
+        drawBarChart(Y);
+        insertBreakLine();
+
+        /* Drawing Line Charts */
+        drawLineChart(X);
+        drawLineChart(Y);
+        insertBreakLine();
+
+        /* Area Charts */
+
+        /* Scatter plot */
+        drawScatterplot(X, Y);
+    });
+    </script>
+    <style>
+        .barChart rect {
+            fill: rgba(66, 127, 179, 0.9);
+            stroke: gray;
+            stroke-width: 2;
+        }
+
+        .lineChart line {
+            stroke: rgba(66, 127, 179, 0.9);
+            stroke-width: 2;
+        }
+
+        .scatterplot circle {
+            strok: rgba(66, 127, 179, 0.9);
+            fill: rgba(66, 127, 179, 0.9);
+            r: 8;
+        }
+    </style>
+</head>
+<body>
+    <h2>CS6630 Homework1</h2>
+    <h3>Guannan Wei &lt;guannan.wei@utah.edu&gt; </h3>
+    <h3>UID: u1011931</h3>
+</body>
+</html>
