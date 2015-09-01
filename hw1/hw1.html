@@ -8,7 +8,7 @@
     <script type="text/javascript">
     /* Data and auxiliary functions */
     var canvasHeight = 300;
-    var canvasWidth = 400;
+    var canvasWidth = 300;
     var barWidth = 20;
     var factor = barWidth;
 
@@ -100,6 +100,31 @@
         refreshSVG(cid);
     };
 
+    /* Area Charts */
+    var drawPolyline = function(svgId, points) {
+        var aux = function() {
+            return _.template("<polyline points=\"<%= points %>\"/>");
+        };
+        points = _.map(points, function(item) {
+            return item[0] + " " + item[1];
+        }).join(",");
+        return $(svgId).append(aux()({points: points}));
+    };
+
+    var drawAreaCanvas = function(width, height) {
+        return drawCanvas("areaChart", "areaChart", width, height);
+    };
+
+    var drawAreaChart = function(data) {
+        var cid = drawAreaCanvas(canvasWidth, canvasHeight);
+        data = _.map(data, function(element, index) {
+            return [index * factor, canvasHeight - (element * factor)];
+        });
+        data = data.concat([[data[data.length-1][0], canvasHeight], [0, canvasHeight]]);
+        drawPolyline(cid, data);
+        refreshSVG(cid);
+    };
+
     /* Scatter plot */
 
     var drawPlot = function(svgId, cx, cy) {
@@ -136,12 +161,18 @@
         insertBreakLine();
 
         /* Area Charts */
+        drawAreaChart(X);
+        drawAreaChart(Y);
+        insertBreakLine();
 
         /* Scatter plot */
         drawScatterplot(X, Y);
     });
     </script>
     <style>
+        svg {
+            /* transform: scale(20); */
+        }
         .barChart rect {
             fill: rgba(66, 127, 179, 0.9);
             stroke: gray;
@@ -157,6 +188,10 @@
             strok: rgba(66, 127, 179, 0.9);
             fill: rgba(66, 127, 179, 0.9);
             r: 8;
+        }
+
+        .areaChart polyline {
+            fill: rgba(66, 127, 179, 0.9);
         }
     </style>
 </head>
