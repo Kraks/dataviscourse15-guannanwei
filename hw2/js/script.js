@@ -2,7 +2,14 @@
 // These keep JSHint quiet if you're using it (highly recommended!)
 
 function staircase() {
-    // ****** TODO: PART II ******
+    var svgHeight = 200;
+    var barWidth = 10;
+    var svg = document.getElementById("barChart1");
+    var rects = svg.getElementsByTagName("rect");
+    for (var i = 0; i < rects.length; i++) {
+        var rect = rects[i];
+        rect.setAttribute("height", i * barWidth);
+    }
 }
 
 function update(error, data) {
