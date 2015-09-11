@@ -4,7 +4,7 @@
 function staircase() {
     var svgHeight = 200;
     var barWidth = 10;
-    var svg = document.getElementById("barChart1");
+    var svg = document.getElementById("barChart_a");
     var rects = svg.getElementsByTagName("rect");
     for (var i = 0; i < rects.length; i++) {
         var rect = rects[i];
@@ -31,7 +31,7 @@ function update(error, data) {
         // We need to explicitly convert values
         // to numbers so that comparisons work
         // when we call d3.max()
-        data.forEach(function (d) {
+        data.forEach(function(d) {
             d.a = parseInt(d.a);
             d.b = parseFloat(d.b);
         });
@@ -39,12 +39,12 @@ function update(error, data) {
 
     // Set up the scales
     var aScale = d3.scale.linear()
-        .domain([0, d3.max(data, function (d) {
+        .domain([0, d3.max(data, function(d) {
             return d.a;
         })])
         .range([0, 150]);
     var bScale = d3.scale.linear()
-        .domain([0, d3.max(data, function (d) {
+        .domain([0, d3.max(data, function(d) {
             return d.b;
         })])
         .range([0, 150]);
@@ -52,38 +52,129 @@ function update(error, data) {
         .domain([0, data.length])
         .range([0, 110]);
 
-    // ****** TODO: PART III (you will also edit in PART V) ******
+    // ****** PART III (you will also edit in PART V) ******
 
-    // TODO: Select and update the 'a' bar chart bars
+    var rectsA = d3.select("#barChart_a")
+        .select("g").selectAll("rect").data(data);
 
-    // TODO: Select and update the 'b' bar chart bars
+    rectsA.enter().append("rect");
 
-    // TODO: Select and update the 'a' line chart path using this line generator
+    rectsA.attr("y", 0)
+        .attr("x", function(d, i) {
+            return i * 10;
+        })
+        .attr("height", function(d, i) {
+            return aScale(d.a);
+        })
+        .attr("width", function(d, i) {
+            return 10;
+        })
+        .on("mouseenter", function(d) {
+            d3.select(this).style("fill", "#00CCFF");
+        })
+        .on("mouseleave", function(d) {
+            d3.select(this).style("fill", "steelblue");
+        });
+    rectsA.exit().remove();
+
+    var rectsB = d3.select("#barChart_b")
+        .select("g").selectAll("rect").data(data);
+
+    rectsB.enter().append("rect");
+    rectsB.attr("y", 0)
+        .attr("x", function(d, i) {
+            return i * 10;
+        })
+        .attr("height", function(d, i) {
+            return bScale(d.b);
+        })
+        .attr("width", function(d, i) {
+            return 10;
+        })
+        .on("mouseenter", function(d) {
+            d3.select(this).style("fill", "#00CCFF");
+        })
+        .on("mouseleave", function(d) {
+            d3.select(this).style("fill", "steelblue");
+        });
+    rectsB.exit().remove();
+
     var aLineGenerator = d3.svg.line()
-        .x(function (d, i) {
+        .x(function(d, i) {
             return iScale(i);
         })
-        .y(function (d) {
+        .y(function(d) {
             return aScale(d.a);
         });
 
-    // TODO: Select and update the 'b' line chart path (create your own generator)
+    var pathA = d3.select("#linesChart_a").select("path");
+    pathA.data(data).attr("d", aLineGenerator(data));
 
-    // TODO: Select and update the 'a' area chart path using this line generator
+    var bLineGenerator = d3.svg.line()
+        .x(function(d, i) {
+            return iScale(i);
+        })
+        .y(function(d) {
+            return bScale(d.b);
+        });
+    var pathB = d3.select("#linesChart_b").select("path");
+    pathB.data(data).attr("d", bLineGenerator(data));
+
     var aAreaGenerator = d3.svg.area()
-        .x(function (d, i) {
+        .x(function(d, i) {
             return iScale(i);
         })
         .y0(0)
-        .y1(function (d) {
+        .y1(function(d) {
             return aScale(d.a);
         });
+    var areaA = d3.select("#areaChart_a").select("path");
+    areaA.data(data).attr("d", aAreaGenerator(data));
 
-    // TODO: Select and update the 'b' area chart path (create your own generator)
+    var bAreaGenerator = d3.svg.area()
+        .x(function(d, i) {
+            return iScale(i);
+        })
+        .y0(0)
+        .y1(function(d) {
+            return bScale(d.b);
+        });
+    var areaB = d3.select("#areaChart_b").select("path");
+    areaB.data(data).attr("d", bAreaGenerator(data));
 
-    // TODO: Select and update the scatterplot points
+    var scatterplot = d3.select("#scatterplot")
+                        .select("g").selectAll("circle").data(data);
 
-    // ****** TODO: PART IV ******
+    scatterplot.enter().append("circle");
+    scatterplot
+        .attr("cx", function(d, i) {
+            return aScale(d.a)
+        })
+        .attr("cy", function(d, i) {
+            return bScale(d.b);
+        })
+        .attr("r", function(d, i) {
+            return 5;
+        })
+        .on("click", function(d) {
+            console.log("x: " + d.a + " y: " + d.b);
+        })
+        .on("mouseover", function(d) {
+            d3.select("#tooltip")
+                .html(function() {
+                    return "x: " + d.a + "</br>" + " y: " + d.b;
+                })
+                .transition()
+                .duration(200)
+                .style("display", "block")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 30) + "px");
+        })
+        .on("mouseout", function(d) {
+            d3.select("#tooltip")
+                .style("display", "none");
+        });
+    scatterplot.exit().remove();
 }
 
 function changeData() {
@@ -97,14 +188,14 @@ function randomSubset() {
     // and then slice out a random chunk before
     // passing the data to update()
     var dataFile = document.getElementById('dataset').value;
-    d3.csv('data/' + dataFile + '.csv', function (error, data) {
+    d3.csv('data/' + dataFile + '.csv', function(error, data) {
         var subset = [];
-        data.forEach(function (d) {
+        data.forEach(function(d) {
             if (Math.random() > 0.5) {
                 subset.push(d);
             }
         });
-
+        console.log(subset.length);
         update(error, subset);
     });
 }
