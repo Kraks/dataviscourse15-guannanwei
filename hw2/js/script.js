@@ -54,7 +54,7 @@ function update(error, data) {
 
     // ****** PART III (you will also edit in PART V) ******
 
-    /*======================================*/
+    /*==============Bar Chart A==============*/
     var rectsA = d3.select("#barChart_a")
         .select("g").selectAll("rect").data(data);
 
@@ -94,7 +94,7 @@ function update(error, data) {
         .attr("opacity", 0)
         .remove();
 
-    /*======================================*/
+    /*==============Bar Chart B==============*/
 
     var rectsB = d3.select("#barChart_b")
         .select("g").selectAll("rect").data(data);
@@ -135,7 +135,7 @@ function update(error, data) {
         .attr("opacity", 0)
         .remove();
 
-    /*======================================*/
+    /*==============Line Chart A==============*/
 
     var aLineGenerator = d3.svg.line()
         .x(function(d, i) {
@@ -146,13 +146,12 @@ function update(error, data) {
         });
 
     var pathA = d3.select("#linesChart_a").select("path").data(data);
-
     pathA.transition()
         .duration(1000)
         .attr("opacity", 1)
         .attr("d", aLineGenerator(data));
 
-    /*======================================*/
+    /*==============Line Chart B==============*/
 
     var bLineGenerator = d3.svg.line()
         .x(function(d, i) {
@@ -161,13 +160,14 @@ function update(error, data) {
         .y(function(d) {
             return bScale(d.b);
         });
+
     var pathB = d3.select("#linesChart_b").select("path").data(data);
     pathB.transition()
         .duration(1000)
         .attr("opacity", 1)
         .attr("d", bLineGenerator(data));
 
-    /*======================================*/
+    /*==============Area Chart A==============*/
 
     var aAreaGenerator = d3.svg.area()
         .x(function(d, i) {
@@ -177,13 +177,14 @@ function update(error, data) {
         .y1(function(d) {
             return aScale(d.a);
         });
+
     var areaA = d3.select("#areaChart_a").select("path").data(data);
     areaA.transition()
         .duration(1000)
         .attr("opacity", 1)
         .attr("d", aAreaGenerator(data));
 
-    /*======================================*/
+    /*==============Area Chart B==============*/
 
     var bAreaGenerator = d3.svg.area()
         .x(function(d, i) {
@@ -193,13 +194,14 @@ function update(error, data) {
         .y1(function(d) {
             return bScale(d.b);
         });
+
     var areaB = d3.select("#areaChart_b").select("path").data(data);
     areaB.transition()
         .duration(1000)
         .attr("opacity", 1)
         .attr("d", bAreaGenerator(data));
 
-    /*======================================*/
+    /*==============Scatterplot==============*/
 
     var scatterplot = d3.select("#scatterplot")
         .select("g").selectAll("circle").data(data);
