@@ -54,12 +54,22 @@ function update(error, data) {
 
     // ****** PART III (you will also edit in PART V) ******
 
+    /*======================================*/
     var rectsA = d3.select("#barChart_a")
         .select("g").selectAll("rect").data(data);
 
-    rectsA.enter().append("rect");
+    rectsA.enter()
+        .append("rect")
+        .attr("opacity", 0)
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1);
 
-    rectsA.attr("y", 0)
+    rectsA
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1)
+        .attr("y", 0)
         .attr("x", function(d, i) {
             return i * 10;
         })
@@ -68,20 +78,39 @@ function update(error, data) {
         })
         .attr("width", function(d, i) {
             return 10;
-        })
+        });
+
+    rectsA
         .on("mouseenter", function(d) {
             d3.select(this).style("fill", "#00CCFF");
         })
         .on("mouseleave", function(d) {
             d3.select(this).style("fill", "steelblue");
         });
-    rectsA.exit().remove();
+
+    rectsA.exit()
+        .transition()
+        .duration(1000)
+        .attr("opacity", 0)
+        .remove();
+
+    /*======================================*/
 
     var rectsB = d3.select("#barChart_b")
         .select("g").selectAll("rect").data(data);
 
-    rectsB.enter().append("rect");
-    rectsB.attr("y", 0)
+    rectsB.enter()
+        .append("rect")
+        .attr("opacity", 0)
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1);
+
+    rectsB
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1)
+        .attr("y", 0)
         .attr("x", function(d, i) {
             return i * 10;
         })
@@ -90,14 +119,23 @@ function update(error, data) {
         })
         .attr("width", function(d, i) {
             return 10;
-        })
+        });
+
+    rectsB
         .on("mouseenter", function(d) {
             d3.select(this).style("fill", "#00CCFF");
         })
         .on("mouseleave", function(d) {
             d3.select(this).style("fill", "steelblue");
         });
-    rectsB.exit().remove();
+
+    rectsB.exit()
+        .transition()
+        .duration(1000)
+        .attr("opacity", 0)
+        .remove();
+
+    /*======================================*/
 
     var aLineGenerator = d3.svg.line()
         .x(function(d, i) {
@@ -107,8 +145,14 @@ function update(error, data) {
             return aScale(d.a);
         });
 
-    var pathA = d3.select("#linesChart_a").select("path");
-    pathA.data(data).attr("d", aLineGenerator(data));
+    var pathA = d3.select("#linesChart_a").select("path").data(data);
+
+    pathA.transition()
+        .duration(1000)
+        .attr("opacity", 1)
+        .attr("d", aLineGenerator(data));
+
+    /*======================================*/
 
     var bLineGenerator = d3.svg.line()
         .x(function(d, i) {
@@ -117,8 +161,13 @@ function update(error, data) {
         .y(function(d) {
             return bScale(d.b);
         });
-    var pathB = d3.select("#linesChart_b").select("path");
-    pathB.data(data).attr("d", bLineGenerator(data));
+    var pathB = d3.select("#linesChart_b").select("path").data(data);
+    pathB.transition()
+        .duration(1000)
+        .attr("opacity", 1)
+        .attr("d", bLineGenerator(data));
+
+    /*======================================*/
 
     var aAreaGenerator = d3.svg.area()
         .x(function(d, i) {
@@ -128,8 +177,13 @@ function update(error, data) {
         .y1(function(d) {
             return aScale(d.a);
         });
-    var areaA = d3.select("#areaChart_a").select("path");
-    areaA.data(data).attr("d", aAreaGenerator(data));
+    var areaA = d3.select("#areaChart_a").select("path").data(data);
+    areaA.transition()
+        .duration(1000)
+        .attr("opacity", 1)
+        .attr("d", aAreaGenerator(data));
+
+    /*======================================*/
 
     var bAreaGenerator = d3.svg.area()
         .x(function(d, i) {
@@ -139,14 +193,28 @@ function update(error, data) {
         .y1(function(d) {
             return bScale(d.b);
         });
-    var areaB = d3.select("#areaChart_b").select("path");
-    areaB.data(data).attr("d", bAreaGenerator(data));
+    var areaB = d3.select("#areaChart_b").select("path").data(data);
+    areaB.transition()
+        .duration(1000)
+        .attr("opacity", 1)
+        .attr("d", bAreaGenerator(data));
+
+    /*======================================*/
 
     var scatterplot = d3.select("#scatterplot")
-                        .select("g").selectAll("circle").data(data);
+        .select("g").selectAll("circle").data(data);
 
-    scatterplot.enter().append("circle");
+    scatterplot.enter()
+        .append("circle")
+        .attr("opacity", 0)
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1);
+
     scatterplot
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1)
         .attr("cx", function(d, i) {
             return aScale(d.a)
         })
@@ -155,7 +223,9 @@ function update(error, data) {
         })
         .attr("r", function(d, i) {
             return 5;
-        })
+        });
+
+    scatterplot
         .on("click", function(d) {
             console.log("x: " + d.a + " y: " + d.b);
         })
@@ -174,7 +244,12 @@ function update(error, data) {
             d3.select("#tooltip")
                 .style("display", "none");
         });
-    scatterplot.exit().remove();
+
+    scatterplot.exit()
+        .transition()
+        .duration(1000)
+        .attr("opacity", 0)
+        .remove();
 }
 
 function changeData() {
