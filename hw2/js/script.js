@@ -1,6 +1,7 @@
 /*globals alert, document, d3, console*/
 // These keep JSHint quiet if you're using it (highly recommended!)
 
+/*==============Staircase==============*/
 function staircase() {
     var svgHeight = 200;
     var barWidth = 10;
