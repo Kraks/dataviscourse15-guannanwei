@@ -7,14 +7,13 @@ var data,
     selectedSeries,
     colorScale;
 
-
 /* EVENT RESPONSE FUNCTIONS */
 
 function setHover(d) {
     // There are FOUR data_types that can be hovered;
     // nothing (null), a single Game, a Team, or
     // a Location
-    
+
     // ******* TODO: PART V *******
 }
 
@@ -28,7 +27,7 @@ function changeSelection(d) {
     // a Team, or a Location.
 
     // ******* TODO: PART V *******
-    
+
     // Update everything that is data-dependent
     // Note that updateBarChart() needs to come first
     // so that the color scale is set
@@ -41,26 +40,78 @@ function updateBarChart() {
         xAxisSize = 100,
         yAxisSize = 60;
 
-    // ******* TODO: PART I *******
-    
-    // Create the x and y scales; make
-    // sure to leave room for the axes
-    
-    // Create colorScale (note that colorScale
-    // is global! Other functions will refer to it)
+    var bottomPadding = 90;
+    var leftPadding = 60;
 
-    // Create the axes (hint: use #xAxis and #yAxis)
+    var xScale = d3.scale.ordinal()
+        .rangeRoundBands([0, svgBounds.width - leftPadding], 0.1)
+        .domain(selectedSeries.map(function(d) {
+            return d.Date;
+        }));
+    var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(selectedSeries.length);
+    d3.select("#barChart")
+      .select("#xAxis")
+      .attr("transform", "translate(0, " + (svgBounds.height - bottomPadding) + ")")
+      .call(xAxis)
+      .selectAll("text")
+      .attr("transform", function(d) {
+        return "translate(-20, 50) rotate(270)";
+      });
+    
+    ///////////////////////////////////
+    var yScale = d3.scale.linear()
+        .range([0, svgBounds.height - bottomPadding])
+        .domain([d3.max(selectedSeries, function(d) {
+            return d.attendance;
+        }), 0]);
+    var yAxis = d3.svg.axis().scale(yScale).orient("left");
+    d3.select("#barChart")
+      .select("#yAxis")
+      .call(yAxis);
+    
+    ///////////////////////////////////
+    colorScale = d3.scale.quantize()
+      .domain([d3.min(selectedSeries, function(d) {
+        return d.attendance; 
+      }), d3.max(selectedSeries, function(d) {
+        return d.attendance;
+      })])
+      .range(colorbrewer.PuBu[3]);
 
-    // Create the bars (hint: use #bars)
+    var barInterval = 5;
+    var barWidth = (svgBounds.width-leftPadding)/selectedSeries.length - barInterval;
+    var rects = d3.select("#barChart").select("#bars")
+      .attr("transform", "translate("+barInterval+", "+(svgBounds.height - bottomPadding)+") scale(1, -1)")
+      .selectAll("rect").data(selectedSeries)
+      .enter()
+      .append("rect")
+      .attr("opacity", 1)
+      .attr("x", function(d, i) {
+        return i * (barWidth + 4);
+      })
+      .attr("y", function(d, i) {
+        return 0;
+      })
+      .attr("width", function(d, i) {
+        return barWidth;
+      })
+      .attr("height", function(d, i) {
+        return svgBounds.height - bottomPadding - yScale(d.attendance);
+      })
+      .style("fill", function(d) {
+        console.log(colorScale(d.attendance));
+        
+        return colorScale(d.attendance);
+      })
     
     // ******* TODO: PART IV *******
-    
+
     // Make the bars respond to hover and click events
 }
 
 function updateForceDirectedGraph() {
     // ******* TODO: PART II *******
-    
+
     // Set up the force-directed
     // layout engine
 
@@ -69,17 +120,17 @@ function updateForceDirectedGraph() {
     // Update the links based on the current selection
 
     // Draw the nodes (hint: use #nodes), and make them respond to dragging
-    
+
     // ******* TODO: PART IV *******
-    
+
     // Make the nodes respond to hover and click events
-    
+
     // ******* TODO: PART V *******
-    
+
     // Color and size the Game nodes if they are in selectedSeries
-    
+
     // ******* TODO: PART II *******
-    
+
     // Finally, tell the layout engine how
     // to manipulate the nodes and links
     // that we've drawn
@@ -87,15 +138,15 @@ function updateForceDirectedGraph() {
 
 function updateMap() {
     // ******* TODO: PART III *******
-    
+
     // Draw the games on the map (hint: use #points)
-    
+
     // NOTE: locationData is *NOT* a Javascript Array, like
     // we'd normally use for .data() ... instead, it's just an
     // object (often called an Associative Array)!
-    
+
     // ******* TODO: PART V *******
-    
+
     // Update the circle appearance (set the fill to the
     // mean attendance of all selected games... if there
     // are no matching games, revert to the circle's default style)
@@ -103,7 +154,7 @@ function updateMap() {
 
 function drawStates(usStateData) {
     // ******* TODO: PART III *******
-    
+
     // Draw the background (state outlines; hint: use #states)
 }
 
@@ -123,7 +174,7 @@ function isObjectInArray(obj, array) {
     // With Javascript primitives (strings, numbers), you
     // can test its presence in an array with
     // array.indexOf(obj) !== -1
-    
+
     // However, with actual objects, we need this
     // helper function:
     var i;
@@ -183,10 +234,10 @@ function deriveLocationData() {
             // a data_type property, similar to the ones in the
             // original dataset that you can use to identify
             // what type of selection the current selection is,
-            
+
             // and a list of all the original game objects that
             // happened at this location
-            
+
             if (!locationData.hasOwnProperty(key)) {
                 locationData[key] = {
                     "latitude": d.latitude,
@@ -246,7 +297,7 @@ function deriveTeamSchedules() {
 
 d3.json("data/us.json", function (error, usStateData) {
     if (error) throw error;
-    
+
     drawStates(usStateData);
 });
 d3.json("data/pac12_2013.json", function (error, loadedData) {
@@ -260,10 +311,9 @@ d3.json("data/pac12_2013.json", function (error, loadedData) {
     deriveGraphData();
     deriveLocationData();
     deriveTeamSchedules();
-    
+
     // Start off with Utah's games selected
     selectedSeries = teamSchedules.Utah;
-
     // Draw everything for the first time
     updateBarChart();
     updateForceDirectedGraph();
