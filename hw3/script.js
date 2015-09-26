@@ -62,7 +62,8 @@ function findMaxAndMinAttendance() {
             if (x < y) return x;
             return y;
         });
-        if (teamMin < minAttendance) minAttendance = teamMin;
+        if (teamMin < minAttendance || minAttendance === 0)
+            minAttendance = teamMin;
     }
 }
 
