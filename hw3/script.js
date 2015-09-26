@@ -16,7 +16,7 @@ function setHover(d) {
     // There are FOUR data_types that can be hovered;
     // nothing (null), a single Game, a Team, or
     // a Locationd
-    var aux = function(game) {
+    var getPlayers = function(game) {
         return game["Home Team Name"] + "@" + game["Visit Team Name"]
     }
     var info = d3.select("#info");
@@ -25,9 +25,9 @@ function setHover(d) {
     } else if (d.data_type === "Team") {
         info.html(d.name);
     } else if (d.data_type === "Game") {
-        info.html(aux(d));
+        info.html(getPlayers(d));
     } else if (d.data_type === "Location") {
-        info.html(d.games.map(aux));
+        info.html(d.games.map(getPlayers));
     } else {
         //do nothing
     }
@@ -76,10 +76,12 @@ function auxPointFill(d) {
 function auxUpdateForceLayout(filterFunc) {
     d3.select("#nodes").selectAll("path")
         .filter(filterFunc)
+        .attr("transform", function(d) {
+            return "translate(" + d.x + ", " + d.y + "), scale(2.0)";
+        })
         .style("fill", function(node) {
             return colorScale(node.attendance);
         });
-        // TODO scale
 }
 
 function auxUpdateMapPoint(filterFunc) {
@@ -95,7 +97,10 @@ function resetNodes() {
             if (d.data_type === "Team") return "gray";
             return "white";
         })
-        .style("stroke", "gray");
+        .style("stroke", "gray")
+        .attr("transform", function(d, i) {
+            return "translate(" + d.x + ", " + d.y + "), scale(1)";
+        });
 }
 
 function changeSelection(d) {
@@ -118,39 +123,35 @@ function changeSelection(d) {
 
         if (d.data_type === "Team") {
             selectedSeries = teamSchedules[d.name];
+            locations = selectedSeries.map(function(d) {
+                return d["latitude"] + "," + d["longitude"];
+            });
+
             var selectedNodesId = selectedSeries.map(function(d) {
                 return d["_id"];
             });
             auxUpdateForceLayout(function(d, i) {
                 return (d.data_type === "Game" && selectedNodesId.indexOf(d["_id"]) !== -1);
             });
-            locations = selectedSeries.map(function(d) {
-                return d["latitude"] + "," + d["longitude"];
-            });
-        }
-        else if (d.data_type === "Game") {
+        } else if (d.data_type === "Game") {
             selectedSeries = [d];
             locations = [d["latitude"] + "," + d["longitude"]];
-            d3.select(this).style("fill", colorScale(d.attendance));
+            auxUpdateForceLayout(function(n, i) {
+                return n["_id"] === d["_id"];
+            })
         }
 
         auxUpdateMapPoint(function(d, i) {
             return locations.indexOf(d["latitude"] + "," + d["longitude"]) !== -1;
         });
-    }
-    else if (tagName === "circle") {
+    } else if (tagName === "circle") {
         selectedSeries = d.games;
-
-        d3.select(this)
-            .style("fill", auxPointFill)
-            .style("r", 10);
-
+        d3.select(this).style("fill", auxPointFill).style("r", 10);
         var gamesId = d.games.map(function(x) { return x["_id"]; });
         auxUpdateForceLayout(function(d, i) {
             return (d.data_type === "Game" && gamesId.indexOf(d["_id"]) !== -1);
         });
-    }
-    else {
+    } else {
         //do nothing
     }
     updateBarChart();
@@ -195,8 +196,8 @@ function updateBarChart() {
     var barWidth = (svgBounds.width - yAxisSize) / selectedSeries.length - barInterval;
 
     d3.select("#barChart").select("#bars")
-        .attr("transform", "translate(" + barInterval + ", " + (svgBounds.height - xAxisSize) + ") scale(1, -1)");
-
+        .attr("transform", "translate(" + barInterval + ", "
+                            + (svgBounds.height - xAxisSize) + ") scale(1, -1)");
     var rects = d3.select("#barChart").select("#bars").selectAll("rect").data(selectedSeries);
 
     rects.enter()
@@ -206,15 +207,11 @@ function updateBarChart() {
         .attr("x", function(d, i) {
             return i * (barWidth + 4);
         })
-        .attr("y", function(d, i) {
-            return 0;
-        })
+        .attr("y",  0)
         .style("fill", function(d) {
             return colorScale(d.attendance || 0);
         })
-        .attr("width", function(d, i) {
-            return barWidth;
-        })
+        .attr("width", barWidth)
         .attr("height", function(d, i) {
             return svgBounds.height - xAxisSize - yScale(d.attendance || 0);
         });
@@ -286,7 +283,7 @@ function updateForceDirectedGraph() {
 
         node
             .attr("transform", function(d) {
-                return "translate(" + d.x + ", " + d.y + ")";
+                return "translate(" + d.x + ", " + d.y + "), scale(1)";
             });
     });
 
@@ -321,8 +318,8 @@ function updateMap() {
         .style("stroke", "gray");
 
     points.on("click", changeSelection)
-            .on("mouseenter", setHover)
-            .on("mouseleave", clearHover);
+        .on("mouseenter", setHover)
+        .on("mouseleave", clearHover);
 }
 
 function drawStates(usStateData) {
@@ -333,7 +330,6 @@ function drawStates(usStateData) {
         .data([states])
         .attr("d", path);
 }
-
 
 /* DATA DERIVATION */
 
@@ -463,7 +459,6 @@ function deriveTeamSchedules() {
         }
     }
 }
-
 
 /* DATA LOADING */
 
