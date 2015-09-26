@@ -77,7 +77,7 @@ function auxUpdateForceLayout(filterFunc) {
     d3.select("#nodes").selectAll("path")
         .filter(filterFunc)
         .attr("transform", function(d) {
-            return "translate(" + d.x + ", " + d.y + "), scale(2.0)";
+            return "translate(" + d.x + ", " + d.y + ") scale(2)";
         })
         .style("fill", function(node) {
             return colorScale(node.attendance);
@@ -99,7 +99,7 @@ function resetNodes() {
         })
         .style("stroke", "gray")
         .attr("transform", function(d, i) {
-            return "translate(" + d.x + ", " + d.y + "), scale(1)";
+            return "translate(" + d.x + ", " + d.y + ") scale(1) ";
         });
 }
 
@@ -147,7 +147,9 @@ function changeSelection(d) {
     } else if (tagName === "circle") {
         selectedSeries = d.games;
         d3.select(this).style("fill", auxPointFill).style("r", 10);
-        var gamesId = d.games.map(function(x) { return x["_id"]; });
+        var gamesId = d.games.map(function(x) {
+            return x["_id"];
+        });
         auxUpdateForceLayout(function(d, i) {
             return (d.data_type === "Game" && gamesId.indexOf(d["_id"]) !== -1);
         });
@@ -196,8 +198,7 @@ function updateBarChart() {
     var barWidth = (svgBounds.width - yAxisSize) / selectedSeries.length - barInterval;
 
     d3.select("#barChart").select("#bars")
-        .attr("transform", "translate(" + barInterval + ", "
-                            + (svgBounds.height - xAxisSize) + ") scale(1, -1)");
+        .attr("transform", "translate(" + barInterval + ", " + (svgBounds.height - xAxisSize) + ") scale(1, -1)");
     var rects = d3.select("#barChart").select("#bars").selectAll("rect").data(selectedSeries);
 
     rects.enter()
@@ -207,7 +208,7 @@ function updateBarChart() {
         .attr("x", function(d, i) {
             return i * (barWidth + 4);
         })
-        .attr("y",  0)
+        .attr("y", 0)
         .style("fill", function(d) {
             return colorScale(d.attendance || 0);
         })
@@ -283,7 +284,7 @@ function updateForceDirectedGraph() {
 
         node
             .attr("transform", function(d) {
-                return "translate(" + d.x + ", " + d.y + "), scale(1)";
+                return "translate(" + d.x + ", " + d.y + ")";
             });
     });
 
@@ -488,7 +489,8 @@ d3.json("data/pac12_2013.json", function(error, loadedData) {
 
     findMaxAndMinAttendance();
     // colorScale should initialze only once.
-    colorScale = d3.scale.quantize().domain([minAttendance, maxAttendance]).range(colorbrewer.PuBu[8].slice(2));
+    colorScale = d3.scale.quantize()
+        .domain([minAttendance, maxAttendance]).range(colorbrewer.PuBu[8].slice(2));
 
     // Draw everything for the first time
     updateBarChart();
