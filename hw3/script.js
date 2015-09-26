@@ -215,7 +215,7 @@ function updateBarChart() {
         })
         .attr("width", barWidth)
         .attr("height", function(d, i) {
-            return svgBounds.height - xAxisSize - yScale(d.attendance || 0);
+            return svgBounds.height - xAxisSize - yScale(d.attendance);
         });
 
     rects.on("click", changeSelection)
