@@ -7,14 +7,26 @@ var data,
     selectedSeries,
     colorScale;
 
+var maxAttendance = 0;
+var minAttendance = 0;
+
 /* EVENT RESPONSE FUNCTIONS */
 
 function setHover(d) {
     // There are FOUR data_types that can be hovered;
     // nothing (null), a single Game, a Team, or
     // a Location
+    
+    console.log(d);
+    if (d.data_type === "Team") {
 
-    // ******* TODO: PART V *******
+    }
+    else if (d.data_type === "Game") {
+    }
+    else if (d.data_type === "Location") {
+    }
+    else {
+    }
 }
 
 function clearHover() {
@@ -40,18 +52,16 @@ function updateBarChart() {
         xAxisSize = 100,
         yAxisSize = 60;
 
-    var bottomPadding = 90;
-    var leftPadding = 60;
-
     var xScale = d3.scale.ordinal()
-        .rangeRoundBands([0, svgBounds.width - leftPadding], 0.1)
+        .rangeRoundBands([0, svgBounds.width - yAxisSize], 0.1)
         .domain(selectedSeries.map(function(d) {
             return d.Date;
         }));
     var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(selectedSeries.length);
+
     d3.select("#barChart")
       .select("#xAxis")
-      .attr("transform", "translate(0, " + (svgBounds.height - bottomPadding) + ")")
+      .attr("transform", "translate(0, " + (svgBounds.height - xAxisSize) + ")")
       .call(xAxis)
       .selectAll("text")
       .attr("transform", function(d) {
@@ -60,68 +70,168 @@ function updateBarChart() {
     
     ///////////////////////////////////
     var yScale = d3.scale.linear()
-        .range([0, svgBounds.height - bottomPadding])
-        .domain([d3.max(selectedSeries, function(d) {
-            return d.attendance;
-        }), 0]);
+        .range([0, svgBounds.height - xAxisSize])
+        .domain([maxAttendance, minAttendance]);
+
     var yAxis = d3.svg.axis().scale(yScale).orient("left");
+
     d3.select("#barChart")
       .select("#yAxis")
       .call(yAxis);
-    
-    ///////////////////////////////////
-    colorScale = d3.scale.quantize()
-      .domain([d3.min(selectedSeries, function(d) {
-        return d.attendance; 
-      }), d3.max(selectedSeries, function(d) {
-        return d.attendance;
-      })])
-      .range(colorbrewer.PuBu[3]);
 
+    ///////////////////////////////////
     var barInterval = 5;
-    var barWidth = (svgBounds.width-leftPadding)/selectedSeries.length - barInterval;
-    var rects = d3.select("#barChart").select("#bars")
-      .attr("transform", "translate("+barInterval+", "+(svgBounds.height - bottomPadding)+") scale(1, -1)")
-      .selectAll("rect").data(selectedSeries)
+    var barWidth = (svgBounds.width - yAxisSize)/selectedSeries.length - barInterval;
+
+    d3.select("#barChart").select("#bars")
+      .attr("transform", "translate("+barInterval+", "+(svgBounds.height - xAxisSize)+") scale(1, -1)");
+
+    var rects = d3.select("#barChart").select("#bars").selectAll("rect").data(selectedSeries);
+      
+    rects
       .enter()
-      .append("rect")
-      .attr("opacity", 1)
+      .append("rect");
+
+    rects
       .attr("x", function(d, i) {
         return i * (barWidth + 4);
       })
       .attr("y", function(d, i) {
         return 0;
       })
+      .style("fill", function(d) {
+        return colorScale(d.attendance || 0);
+      })
       .attr("width", function(d, i) {
         return barWidth;
       })
       .attr("height", function(d, i) {
-        return svgBounds.height - bottomPadding - yScale(d.attendance);
-      })
-      .style("fill", function(d) {
-        console.log(colorScale(d.attendance));
-        
-        return colorScale(d.attendance);
-      })
+        return svgBounds.height - xAxisSize - yScale(d.attendance || 0);
+      });
+
+    rects.exit().remove();
     
     // ******* TODO: PART IV *******
-
     // Make the bars respond to hover and click events
 }
 
+function resetNodes() {
+    d3.select("#nodes").selectAll("path")
+      .style("fill", function(d) {
+        if (d.data_type === "Team") return "gray";  
+        return "white";
+      })
+      .style("stroke", "gray");
+}
+
 function updateForceDirectedGraph() {
-    // ******* TODO: PART II *******
+    var svgBounds = document.getElementById("graph").getBoundingClientRect();
+    var width = svgBounds.width;
+    var height = svgBounds.height;
+    var force = d3.layout.force()
+                  .charge(-120)
+                  .linkDistance(30)
+                  .friction(0.9)
+                  .gravity(0.1)
+                  .size([width, height]);
 
-    // Set up the force-directed
-    // layout engine
+    force.nodes(data.vertices)
+         .links(data.edges)
+         .start();
 
-    // Draw the links (hint: use #links)
+    var link = d3.select("#links")
+                 .selectAll("line")
+                 .data(data.edges)
+                 .enter()
+                 .append("line")
+                 .style("stroke-width", function(d) {
+                    return 1.5;
+                 });
 
-    // Update the links based on the current selection
+    var node = d3.select("#nodes")
+                 .selectAll("path")
+                 .data(data.vertices)
+                 .enter()
+                 .append("path")
+                 .attr("d", 
+                     d3.svg.symbol()
+                       .type(function(d) {
+                             if (d.data_type === "Team") 
+                                 return "triangle-up";
+                             return "circle";
+                       }))
+                 .style("fill", function(d) {
+                     if (d.data_type === "Team") return "gray";  
+                     return "white";
+                 })
+                 .style("stroke", "gray")
+                 .call(force.drag);
 
-    // Draw the nodes (hint: use #nodes), and make them respond to dragging
+    force.on("tick", function() {
+        link
+          .attr("x1", function(d) {
+              return d.source.x;
+          })
+          .attr("y1", function(d) {
+              return d.source.y;
+          })
+          .attr("x2", function(d) {
+              return d.target.x;
+          })
+          .attr("y2", function(d) {
+              return d.target.y;
+          });
 
-    // ******* TODO: PART IV *******
+        node
+          .attr("transform", function(d) {
+              return "translate(" + d.x + ", " + d.y + ")";
+          });
+    });
+    
+    // TODO bipartite graph
+
+    d3.selectAll("#nodes path").on("click", function(d) {
+        resetNodes();
+        resetPoints();
+        var locations;
+
+        if (d.data_type === "Team") {
+          selectedSeries = teamSchedules[d.name];
+          console.log(selectedSeries);
+
+          var selectedNodesId = selectedSeries.map(function(d) {
+            return d["_id"];
+          });
+          var nodes = d3.select("#nodes")
+              .selectAll("path")
+              .filter(function(d, i) {
+                return (d.data_type === "Game" && selectedNodesId.indexOf(d["_id"]) !== -1);
+              })
+              .style("fill", function(node) {
+                return colorScale(node.attendance);
+              });
+          // TODO scale 
+            
+          locations = selectedSeries.map(function(d) {
+            return d["latitude"] + "," + d["longitude"];
+          });
+
+        }
+        else if (d.data_type === "Game") {
+          selectedSeries = [d];
+          locations = [d["latitude"] + "," + d["longitude"]];
+          d3.select(this).style("fill", colorScale(d.attendance));
+        }
+
+        var points = d3.select("#map").selectAll("circle")
+          .filter(function(d, i) {
+              return locations.indexOf(d["latitude"] + "," + d["longitude"]) !== -1;
+          })
+        points.style("fill", auxPointFill)
+        .style("r", 10);
+
+        updateBarChart();
+    });
 
     // Make the nodes respond to hover and click events
 
@@ -136,14 +246,66 @@ function updateForceDirectedGraph() {
     // that we've drawn
 }
 
+function resetPoints() {
+    d3.select("#map")
+      .selectAll("circle")
+      .style("fill", "transparent")
+      .style("r", 5);
+}
+
+function auxPointFill(d) {
+  return colorScale(d.games.map(function(x) {
+    return x.attendance || 0;
+  }).reduce(function(x, y) {
+    return x + y;
+  })/d.games.length);
+}
+
 function updateMap() {
-    // ******* TODO: PART III *******
+    var proj = d3.geo.albers().scale(1060);
 
-    // Draw the games on the map (hint: use #points)
+    var points = d3.select("#map")
+                  .select("#points")
+                  .selectAll("circle")
+                  .data(d3.values(locationData));
 
-    // NOTE: locationData is *NOT* a Javascript Array, like
-    // we'd normally use for .data() ... instead, it's just an
-    // object (often called an Associative Array)!
+    points
+      .enter()
+      .append("circle");
+
+    points
+      .attr("cx", function(d) {
+        return proj([d.longitude, d.latitude])[0];
+      })
+      .attr("cy", function(d) {
+        return proj([d.longitude, d.latitude])[1];
+      })
+      .attr("r", 5)
+      .style("fill", "transparent")
+      .style("stroke", "gray");
+
+    points
+      .on("click", function(d) {
+        console.log(d);
+        resetPoints();
+        resetNodes();
+
+        selectedSeries = d.games;
+        updateBarChart();
+
+        d3.select(this)
+          .style("fill", auxPointFill)
+          .style("r", 10);
+
+        var gamesId = d.games.map(function(x) { return x["_id"]; });
+        var nodes = d3.select("#nodes").selectAll("path")
+          .filter(function(d, i) {
+             return (d.data_type === "Game" && gamesId.indexOf(d["_id"]) !== -1);
+          })
+          .style("fill", function(node) {
+            return colorScale(node.attendance);
+          });
+      });
 
     // ******* TODO: PART V *******
 
@@ -153,9 +315,12 @@ function updateMap() {
 }
 
 function drawStates(usStateData) {
-    // ******* TODO: PART III *******
-
-    // Draw the background (state outlines; hint: use #states)
+    // Reference: http://bl.ocks.org/mbostock/4108203
+    var path = d3.geo.path();
+    var states = topojson.feature(usStateData, usStateData.objects.states);
+    d3.select("#map").select("#states")
+      .data([states])
+      .attr("d", path);
 }
 
 
@@ -314,6 +479,29 @@ d3.json("data/pac12_2013.json", function (error, loadedData) {
 
     // Start off with Utah's games selected
     selectedSeries = teamSchedules.Utah;
+    
+    // find the max and min of all attendance.
+    for (var team in teamSchedules) {
+      var teamMax = teamSchedules[team].map(function(x) { 
+        return x.attendance; 
+      }).reduce(function(x, y) {
+        if (x > y) return x;
+        return y;
+      });
+      if (teamMax > maxAttendance) maxAttendance = teamMax;
+
+      var teamMin = teamSchedules[team].map(function(x) { 
+        return x.attendance; 
+      }).reduce(function(x, y) {
+        if (x < y) return x;
+        return y;
+      });
+      if (teamMin < minAttendance) minAttendance = teamMin;
+    }
+    
+    // colorScale should initialze only once.
+    colorScale = d3.scale.quantize().domain([minAttendance, maxAttendance]).range(colorbrewer.PuBu[8].slice(2));
+
     // Draw everything for the first time
     updateBarChart();
     updateForceDirectedGraph();
