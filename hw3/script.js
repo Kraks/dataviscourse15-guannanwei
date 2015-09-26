@@ -7,6 +7,7 @@ var data,
     selectedSeries,
     colorScale;
 
+// Here add global max attendance and min attendance
 var maxAttendance = 0;
 var minAttendance = 0;
 
@@ -297,6 +298,8 @@ function updateForceDirectedGraph() {
 
         node
             .attr("transform", function(d) {
+                // It's a ugly way to deal with scale when tick
+                // but works good
                 var s = auxGetScale(this.getAttribute("transform"));
                 return "translate(" + d.x + ", " + d.y + ") scale(" + s + ")";
             });
