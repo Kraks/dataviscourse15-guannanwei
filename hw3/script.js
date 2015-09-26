@@ -15,16 +15,22 @@ var minAttendance = 0;
 function setHover(d) {
     // There are FOUR data_types that can be hovered;
     // nothing (null), a single Game, a Team, or
-    // a Location
-
-    console.log(d);
-    if (d.data_type === "Team") {
-
+    // a Locationd
+    var aux = function(game) {
+        return game["Home Team Name"] + "@" + game["Visit Team Name"]
+    }
+    var info = d3.select("#info");
+    if (d == null) {
+        info.html("");
+    } else if (d.data_type === "Team") {
+        info.html(d.name);
     } else if (d.data_type === "Game") {
-
+        info.html(aux(d));
     } else if (d.data_type === "Location") {
-        
-    } else {}
+        info.html(d.games.map(aux));
+    } else {
+        //do nothing
+    }
 }
 
 function clearHover() {
@@ -93,14 +99,6 @@ function resetNodes() {
 }
 
 function changeSelection(d) {
-    // There are FOUR data_types that can be selected;
-    // an empty selection (null), a single Game,
-    // a Team, or a Location.
-
-    // Update everything that is data-dependent
-    // Note that updateBarChart() needs to come first
-    // so that the color scale is set
-
     var tagName = this.tagName;
 
     resetNodes();
@@ -221,7 +219,9 @@ function updateBarChart() {
             return svgBounds.height - xAxisSize - yScale(d.attendance || 0);
         });
 
-    rects.on("click", changeSelection);
+    rects.on("click", changeSelection)
+        .on("mouseenter", setHover)
+        .on("mouseleave", clearHover);
 
     rects.exit().remove();
 }
@@ -291,7 +291,10 @@ function updateForceDirectedGraph() {
     });
 
     // TODO bipartite graph
-    d3.selectAll("#nodes path").on("click", changeSelection);
+    d3.selectAll("#nodes path")
+        .on("click", changeSelection)
+        .on("mouseenter", setHover)
+        .on("mouseleave", clearHover);
 }
 
 function updateMap() {
@@ -317,7 +320,9 @@ function updateMap() {
         .style("fill", "transparent")
         .style("stroke", "gray");
 
-    points.on("click", changeSelection);
+    points.on("click", changeSelection)
+            .on("mouseenter", setHover)
+            .on("mouseleave", clearHover);
 }
 
 function drawStates(usStateData) {
