@@ -65,6 +65,7 @@ function findMaxAndMinAttendance() {
         if (teamMin < minAttendance || minAttendance === 0)
             minAttendance = teamMin;
     }
+    minAttendance /= 2; // To prevent the minimum one do not show in bar chart.
 }
 
 function auxPointFill(d) {
