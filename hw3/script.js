@@ -120,7 +120,6 @@ function changeSelection(d) {
         });
     } else if (tagName === "path") {
         var locations;
-
         if (d.data_type === "Team") {
             selectedSeries = teamSchedules[d.name];
             locations = selectedSeries.map(function(d) {
@@ -224,6 +223,15 @@ function updateBarChart() {
     rects.exit().remove();
 }
 
+var auxGetScale = function(s) {
+    if (s == null) return "1";
+    var pos = s.indexOf("scale(");
+    if (pos !== -1) {
+        return s.slice(pos+6, pos+6+1);
+    }
+    return "1";
+}
+
 function updateForceDirectedGraph() {
     var svgBounds = document.getElementById("graph").getBoundingClientRect();
     var width = svgBounds.width;
@@ -267,7 +275,12 @@ function updateForceDirectedGraph() {
         .style("stroke", "gray")
         .call(force.drag);
 
-    force.on("tick", function() {
+    node
+        .on("click", changeSelection)
+        .on("mouseenter", setHover)
+        .on("mouseleave", clearHover);
+
+    force.on("tick", function(x) {
         link
             .attr("x1", function(d) {
                 return d.source.x;
@@ -284,15 +297,11 @@ function updateForceDirectedGraph() {
 
         node
             .attr("transform", function(d) {
-                return "translate(" + d.x + ", " + d.y + ")";
+                var s = auxGetScale(this.getAttribute("transform"));
+                return "translate(" + d.x + ", " + d.y + ") scale(" + s + ")";
             });
     });
 
-    // TODO bipartite graph
-    d3.selectAll("#nodes path")
-        .on("click", changeSelection)
-        .on("mouseenter", setHover)
-        .on("mouseleave", clearHover);
 }
 
 function updateMap() {
