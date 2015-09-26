@@ -187,7 +187,6 @@ function updateBarChart() {
     var yScale = d3.scale.linear()
         .range([0, svgBounds.height - xAxisSize])
         .domain([maxAttendance, minAttendance]);
-
     var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
     d3.select("#barChart")
@@ -211,7 +210,7 @@ function updateBarChart() {
         })
         .attr("y", 0)
         .style("fill", function(d) {
-            return colorScale(d.attendance || 0);
+            return colorScale(d.attendance);
         })
         .attr("width", barWidth)
         .attr("height", function(d, i) {
