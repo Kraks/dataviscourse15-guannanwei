@@ -42,6 +42,11 @@
             compVis.onSelectionChange(start, end);
         });
 
+        d3.select("#fitInBtn").on("click", function() {
+            d3.select(".sliderHandle").attr("y", "200");
+            countVis.yScale.exponent(1);
+            countVis.updateVis({});
+        });
     }
 
     // call this function after both files are loaded -- error should be "null" if no error
