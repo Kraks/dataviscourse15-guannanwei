@@ -1,27 +1,11 @@
 function CompVis (_parentElement, _data, _metaData) {
-    /**
-     * A word about "this":
-     *
-     * The meaning of "this" can change from function call to function call; the way
-     * we have implemented the class, "this" refers to the CompVis class
-     * in each of the CompVis.prototype.xxxxxxxx = functions.
-     * However, when you create inline functions, "this" often refers
-     * to something else. Usually it points to the function itself. In D3
-     * .attr(function (d, i) {}) functions, for example, "this" refers
-     * to the DOM element that corresponds to the "d" data value.
-     * 
-     * It's usually a good idea to store a reference to the class itself
-     * so that you can still refer to the class inside one of these functions;
-     * in this case, we rename the class-level "this" as "self" (though you
-     * could name it anything you want).
-     */
     var self = this;
 
     self.parentElement = _parentElement;
     self.data = _data;
-    self.overallData = auxFilterAndAggregate(_data, null);
     self.metaData = _metaData;
     self.displayData = [];
+    self.overallData = auxFilterAndAggregate(_data, null);
 
     self.initVis();
 }
@@ -80,9 +64,6 @@ CompVis.prototype.initVis = function () {
 
     // init overall line chart
     self.initOverallChart();
-
-    // call the update method
-    self.updateVis();
 };
 
 CompVis.prototype.initOverallChart = function() {
@@ -121,20 +102,12 @@ CompVis.prototype.wrangleData = function (_filterFunction) {
  */
 CompVis.prototype.updateVis = function () {
     var self = this;
-    // update the scales:
-    //var minMaxY = [0, d3.max(self.displayData)];
-    //self.yScale.domain(minMaxY);
-    //self.yAxis.scale(self.yScale);
-
-    // draw the scales:
-    self.visG.select(".yAxis").call(self.yAxis);
-
     var path = self.visG.select("#selected");
-    console.log(path);
     if (path[0][0] == null) {
         path = self.visG.append("path");
         path.attr("id", "selected");
     }
+
     path.attr("d", self.lineGenerator(self.displayData))
         .style({
             "stroke": "red",
@@ -142,7 +115,6 @@ CompVis.prototype.updateVis = function () {
             "fill": "none"
         });
 };
-
 
 /**
  * Gets called by event handler and should create new aggregated data
@@ -188,7 +160,6 @@ var auxFilterAndAggregate = function(data, _filter) {
     }).reduce(function(x, y) {
         return x.map(function(v, i) { return v + y[i]; });
     }, repeat(0, 16));
-
 };
 
 /**
