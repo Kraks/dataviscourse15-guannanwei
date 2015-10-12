@@ -10,7 +10,6 @@ function CompVis (_parentElement, _data, _metaData) {
     self.initVis();
 }
 
-
 /**
  * Method should be called as soon as data is available.. sets up the SVG and the variables
  */
