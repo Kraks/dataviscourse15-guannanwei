@@ -62,7 +62,6 @@ CountVis.prototype.initVis = function () {
 
     self.xScale = d3.time.scale().range([0, self.graphW]);
     self.yScale = d3.scale.pow().exponent(1).range([self.graphH, 0]);
-    //self.yScale = d3.scale.pow().range([self.graphH, 0]); // POWER SCALE HERE !!!
 
     self.xAxis = d3.svg.axis().scale(self.xScale);
     self.yAxis = d3.svg.axis().scale(self.yScale).orient("left");
@@ -79,9 +78,8 @@ CountVis.prototype.initVis = function () {
     var dateBegin = d3.min(dates)
     var dateEnd = d3.max(dates);
 
-    var visScale = d3.time.scale().domain([dateBegin, dateEnd]).range([self.graphW, 0]); //TODO
-    var brushed = function(x) {
-        //self.updateVis();
+    var visScale = d3.time.scale().domain([dateBegin, dateEnd]).range([self.graphW, 0]); 
+    var brushed = function() {
         if (!brush.empty()) {
             var extent = brush.extent();
             self.eventHandler.selectionChanged(extent[0], extent[1]);

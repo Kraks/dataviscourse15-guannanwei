@@ -145,7 +145,6 @@ AgeVis.prototype.updateVis = function () {
  */
 AgeVis.prototype.onSelectionChange = function (selectionStart, selectionEnd) {
     var self = this;
-
     // call wrangleData with a filter function
     self.wrangleData(function (data) {
         return (data.time <= selectionEnd && data.time >= selectionStart);
