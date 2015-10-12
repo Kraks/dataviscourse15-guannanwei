@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Homework 3 - Tasks 4a</title>
+    <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+    <script src="http://code.jquery.com/jquery-2.1.4.js" charset="utf-8"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+
+    <script src="js/tester.js"></script>
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Test Event Handler (3a)</h1>
+
+        <p>See the results of the tests below. Be aware that passing the test might not be the solution nor does it guarantee full points: </p>
+
+        <div class="panel panel-warning" id="t4a1">
+            <div class="panel-heading ">Task 4 a - simple Test</div>
+            <div class="panel-body">
+                Call <code>simpleTest()</code> as reaction to Event "qwerty".
+            </div>
+        </div>
+
+        <div class="panel panel-warning" id="t4a2">
+            <div class="panel-heading">Task 4 a - sum() Test</div>
+            <div class="panel-body">
+                Call <code>sumTest(x)</code> as reaction to Event "qwerty" with x being the sum of a+b.
+
+            </div>
+        </div>
+
+        <button class="btn btn-success" id="theButton">
+            Fire the QWERTY event
+        </button>
+
+    </div>
+
+    <script>
+        (function () {
+            // ******* Task 3b, 3c *******
+            // Create a handler that will deal with a custom event named "qwerty"
+            d3.select("#theButton").on("click", function () {
+                // ******* Task 3a *******
+                // Fire a "qwerty" event with two parameters: 10 and 20
+                test(10, 20);
+            });
+            
+            function test (a, b) {
+                tester.simpleTest(a, b);
+                tester.sumTest(a + b);
+            }
+            // ******* Task 3b, 3c *******
+            // On a "qwerty" event, call test
+            
+        })();
+    </script>
+</body>
+
+</html>

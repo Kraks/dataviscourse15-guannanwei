@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Homework 4 - MyWorld Data</title>
+
+    <!-- ADD Libraries-->
+    <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+    <script src="http://code.jquery.com/jquery-2.1.4.js" charset="utf-8"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.min.css">
+
+    <!-- Get some nice font-->
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+
+
+    <!--------------------------------->
+    <!-- FROM HERE ON IT IS HW4 stuff-->
+    <!--------------------------------->
+    <!-- add own vis classes-->
+    <script src="js/priovis.js"></script>
+    <script src="js/agevis.js"></script>
+    <script src="js/countvis.js"></script>
+
+    <!-- add own stylesheet-->
+    <link rel="stylesheet" type="text/css" href="css/myStyle.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="container">
+            <h1>CS-5630 / CS-6630 Homework 4 - MyWorld 2015 Data Visualization</h1>
+            <span>Guannan Wei</span>
+            <span>guannan.wei@utah.edu</span>
+            <span>u1011931</span>
+
+            <div class="row">
+                <div class="col-md-8 col-sm-12">
+                    <p> The following visualization shows you the votes for MyWorld 2015. You can select a time range to see changes in the distribution of votes und distribution of age of the voters.</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <button class="btn btn-sm btn-primary" id="fitInBtn"> <span class="glyphicon glyphicon-resize-horizontal"></span> reset zoom </button>
+                </div>
+
+                <div class="col-md-8">
+                    <b>current brush:</b> <span id="brushInfo" class="small"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="countVis" class="col-md-9">
+                    <svg width="650" height="330">
+
+                    </svg>
+                </div>
+                <div id="ageVis" class="col-md-3">
+                    <svg width="230" height="330">
+
+                    </svg>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="prioVis" class="col-md-12">
+                    <svg width="650" height="440">
+
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- We put the main.js script here, because it runs as soon as it's loaded. We only want this to happen after the rest of our DOM already exists. -->
+        <script src="js/main.js"></script>
+</body>
+
+</html>
