@@ -6,7 +6,7 @@ var renderer,
 var cp  = document.getElementById("colorPicker"),
     cpCtx = cp.getContext('2d');
 
-var initColor = [200, 150, 180];
+var initColor = [0, 230, 255];
 
 function initColorPicker() {
     // Reference for color picker:

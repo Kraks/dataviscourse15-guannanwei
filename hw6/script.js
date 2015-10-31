@@ -3,7 +3,7 @@
 var renderer,
     allHistograms = {};
 
-var currentColor = [[200, 150, 180], [145, 123, 231], [123, 45, 19]];
+var currentColor = [[0, 230, 255], [226, 0, 105], [245, 245, 245]];
 var currentRatio = [0.3, 0.6];
 
 function initColorPicker() {
