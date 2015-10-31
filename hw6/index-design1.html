@@ -1,0 +1,76 @@
+<html lang="en">
+
+<head>
+    <title>Homework 6</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        
+        /* Styles that clean up the layout;
+         * you can ignore these (though feel
+         * free to change them if you want to): */
+        h2 {
+            margin: 10px;
+        }
+        div.block,
+        span.header {
+            padding: 10px;
+        }
+        
+        div.block {
+            display: inline-block;
+            border: 1px solid lightgray;
+            margin: 10px;
+        }
+        #renderContainer {
+            position: relative;
+            width: 900px;
+            height: 400px;
+        }
+    </style>
+    <script src="lib/three.min.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/Detector.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/VolumeRenderer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+</head>
+
+<body>
+    <h3>CS-5630 / CS-6630 Homework 6</h3>
+    <span class="header">Guannan Wei</span>
+    <span class="header">guannan.wei@utah.edu</span>
+    <span class="header">u1011931</span>
+
+    <br/>
+    <hr/>
+    
+    <div class="block">
+        <div id="renderContainer"></div>
+    </div>
+    
+    <br/>
+    
+    <div class="block">
+        <span class="header">
+            <select id="volumeMenu">
+                <option>bonsai</option>
+                <option>foot</option>
+                <option>teapot</option>
+            </select>
+        </span>
+        
+        <br/>
+        <hr/>
+        
+        <code>******* Your solution here *******</code>
+    </div>
+
+    <canvas width="256"" height="256" id="colorPicker"></canvas>
+    <span>pick a color</span>
+    
+    <script src="script-design1.js"></script>
+</body>
+
+</html>
