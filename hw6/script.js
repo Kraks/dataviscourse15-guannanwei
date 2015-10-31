@@ -3,9 +3,12 @@
 var renderer,
     allHistograms = {};
 
+// The initial color
 var currentColor = [[0, 230, 255], [226, 0, 105], [245, 245, 245]];
+// The initial threshold for steps
 var currentRatio = [0.3, 0.6];
 
+// Init the color pickers
 function initColorPicker() {
     [1, 2, 3].map(function(no) {
         $("#step" + no).spectrum({
@@ -20,6 +23,7 @@ function initColorPicker() {
     })
 }
 
+// Init the threshold picker, which is a slider
 function initRanger() {
     var MAX_SIZE = 500;
     $("#colorPicker" ).slider({
