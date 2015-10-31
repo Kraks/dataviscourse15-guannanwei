@@ -39,10 +39,10 @@ function updateTransferFunction(color) {
         // return a (probably somewhat transparent) color
         console.log("value: ", value);
         if (value > 2 * 1/3) {
-            return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${1-value})`;
+            return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${value})`;
         }
         else if (value > 2 * 1/4) {
-            return `rgba(${color[2]}, ${color[0]}, ${color[1]}, ${1-value})`;
+            return `rgba(${color[2]}, ${color[0]}, ${color[1]}, ${value})`;
         }
         else {
             return `rgba(${color[1]}, ${color[2]}, ${color[0]}, ${value})`;
