@@ -3,21 +3,51 @@
 var renderer,
     allHistograms = {};
 
-var cp  = document.getElementById("colorPicker"),
-    cpCtx = cp.getContext('2d');
-
-var initColor = [200, 150, 180];
+var currentColor = [[200, 150, 180], [145, 123, 231], [123, 45, 19]];
+var currentRatio = [0.3, 0.6];
 
 function initColorPicker() {
-
+    [1, 2, 3].map(function(no) {
+        $("#step" + no).spectrum({
+            color: "rgb(" + currentColor[no-1].join(",") + ")",
+            showButtons: false,
+            move: function(c) { 
+                c = c.toRgb();
+                currentColor[no-1] = [c.r, c.g, c.b];
+                updateTransferFunction(currentColor, currentRatio);
+            }
+        });
+    })
 }
 
-function updateTransferFunction(color) {
+function initRanger() {
+    var MAX_SIZE = 500;
+    $("#colorPicker" ).slider({
+        range: true,
+        min: 0,
+        max: MAX_SIZE,
+        values: currentRatio.map(function(v) { return v * MAX_SIZE; }),
+        change: function(e, ui) {
+            currentRatio = ui.values.map(function(v) { return v / MAX_SIZE; });
+            updateTransferFunction(currentColor, currentRatio);
+        }
+    });
+}
+
+function updateTransferFunction(colors, ratio) {
     renderer.updateTransferFunction(function (value) {
         // ******* Your solution here! *******
         // Given a voxel value in the range [0.0, 1.0],
         // return a (probably somewhat transparent) color
-        console.log("value: ", value);
+        if (value > ratio[1]) {
+            return `rgba(${colors[0][0]}, ${colors[0][1]}, ${colors[0][2]}, ${value})`;
+        }
+        else if (value > ratio[0]) {
+            return `rgba(${colors[1][0]}, ${colors[1][1]}, ${colors[1][2]}, ${value})`;
+        }
+        else {
+            return `rgba(${colors[2][0]}, ${colors[2][1]}, ${colors[2][2]}, ${value})`;
+        }
     });
 }
 
@@ -28,8 +58,9 @@ function setup() {
     });
     console.log('bonsai histogram:', getHistogram('bonsai', 0.025));
     initColorPicker();
+    initRanger();
 
-    updateTransferFunction(initColor);
+    updateTransferFunction(currentColor, currentRatio);
 }
 
 /*

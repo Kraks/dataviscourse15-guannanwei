@@ -28,25 +28,14 @@
             width: 900px;
             height: 400px;
         }
-        .colorSeg {
-            margin: 0px 0px 0px 0px;
-            padding: 0px 0px 0px 0px;
-            display: inline-block;         
-            height: 30px;
-            background-color: red;
-        }
-        #step1, #step2, #step3 {
-            width: 50px;
-        }
-        #seg1 {
-            width: 5px;
-            background-color: black;
-        }
-        #seg2 {
-            width: 5px;
-            background-color: black;
+        #colorPicker {
+            position: relative;
+            width: 500px;
+            margin: 15px;
         }
     </style>
+    <link rel='stylesheet' href='css/spectrum.css' />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="lib/three.min.js"></script>
     <script src="lib/stats.min.js"></script>
     <script src="lib/Detector.js"></script>
@@ -54,6 +43,9 @@
     <script src="lib/VolumeRenderer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src='lib/spectrum.js'></script>
 </head>
 <body>
     <h3>CS-5630 / CS-6630 Homework 6</h3>
@@ -84,13 +76,11 @@
         
         <code>******* Your solution here *******</code>
     </div>
-    
-    <div class="colorSeg" id="step1"></div>
-    <div class="colorSeg" id="seg1"></div>
-    <div class="colorSeg" id="step2"></div>
-    <div class="colorSeg" id="seg2"></div>
-    <div class="colorSeg" id="step3"></div>
-    
+    <div id="colorPicker">
+    </div>
+    <span>color for step1:</span> <input type='text' id="step1" />
+    <span>color for step2:</span> <input type='text' id="step2" />
+    <span>color for step3:</span> <input type='text' id="step3" />
     <script src="script.js"></script>
 </body>
 
